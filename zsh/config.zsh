@@ -15,13 +15,23 @@ HISTSIZE=5000
 HISTFILE=$HOME/.zsh_history
 SAVEHIST=$HISTSIZE
 HISTDUP=erase
-setopt hist_ignore_all_dups
-setopt hist_save_no_dups
-setopt hist_ignore_dups
-setopt hist_find_no_dups
-setopt hist_ignore_space
-bindkey '^p' history-search-backward
-bindkey '^n' history-serach-forward
+setopt HIST_EXPIRE_DUPS_FIRST
+setopt HIST_IGNORE_ALL_DUPS
+setopt HIST_SAVE_NO_DUPS
+setopt HIST_IGNORE_DUPS
+setopt HIST_FIND_NO_DUPS
+setopt HIST_IGNORE_SPACE
+setopt SHARE_HISTORY
+
+## search through history
+autoload -Uz history-search-end
+
+zle -N history-beginning-search-backward-end \
+                history-search-end
+zle -N history-beginning-search-forward-end \
+                history-search-end
+bindkey "$key[Up]" history-beginning-search-backward-end
+bindkey "$key[Down]" history-beginning-search-forward-end
 
 # arrow keys
 bindkey ';5D' backward-word
