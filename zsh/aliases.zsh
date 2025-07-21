@@ -10,3 +10,6 @@ alias dot='cd ~/.dotfiles/'
 
 alias ga='git add .'
 alias gst='git status'
+
+alias python='python3'
+alias py='python3'
