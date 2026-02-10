@@ -16,6 +16,9 @@ alias gst='git status'
 alias python='python3'
 alias py='python3'
 
+# misc
+alias mkdocs='pipenv install; pipenv run mkdocs build --clean; pipenv run mkdocs serve --livereload'
+
 # wsl only 
 if uname -r | grep -qi 'Microsoft' ; then
   # open file explorer
