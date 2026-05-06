@@ -3,18 +3,29 @@
 # https://github.com/nickjj/dotfiles/blob/master/install
 # ./install.sh
 
-PACKAGES="git vim-gtk3 neovim zsh zinit"
+PACKAGES="git vim-gtk3 xclip wl-clipboard neovim zsh zinit"
 DOT=${HOME}/.dotfiles
-OS_TYPE="$(uname | tr "[:upper:]" "[:lower:]")"
+# OS_TYPE="$(uname | tr "[:upper:]" "[:lower:]")"
 ZSH_INSTALL_SCRIPT=${HOME}/.dotfiles/zsh/zsh_install.sh
 
+SUPPORTED="apt dnf"
+## TODO: separate script for pacman
+if command -v apt &> /dev/null; then
+    PKG_MANAGER="apt"
+elif command -v dnf &> /dev/null; then
+    PKG_MANAGER="dnf"
+else
+    echo "The only package managers supported are: ${SUPPORTED}"
+    exit 1
+fi
+
 if [[ ! -d $DOT ]]; then
-    echo "Dotfiles directory not found! Please check your installation."
+    echo "Dotfiles directory not found at ${DOT}"
     exit
 fi
 
-if [[ ! -d $ZSH_INSTALL_SCRIPT ]]; then
-    echo "Zsh install file not found! Please check your installation."
+if [[ ! -f $ZSH_INSTALL_SCRIPT ]]; then
+    echo "Zsh install file not found at ${ZSH_INSTALL_SCRIPT}"
     exit
 fi
 
@@ -27,37 +38,42 @@ EOF
 while true; do
     read -rp "Do you want to install the above packages? (y/n) " yn
     case "${yn}" in [Yy]*)
-	
-	if type -p vim > /dev/null; then
-	    echo "Installing vim-gtk3 (vim gnome)..."
-	    sudo apt -y install vim-gtk3
-	    [ type -p vim > /dev/null ] && echo "Successfully installed vim!\n"
+	if command -v git &> /dev/null; then
+	    echo "Installing git..."
+
+	    sudo ${PKG_MANAGER} update && sudo ${PKG_MANAGER} install -y git
+
+	    echo "Git successfully installed."
 	else
-	    echo "Vim found, skipping installation."
+	    echo "Git found, skipping installation."
 	fi
+	
+	echo "Installing vim-gtk3 (vim gnome)..."
+	# TODO: xclip for x11 wl-clipboard for wayland
+	sudo ${PKG_MANAGER} -y install vim vim-gtk3 xclip wl-clipboard
+	[ type -p vim > /dev/null ] && echo "Successfully installed vim!\n"
 
-
-	if type -p nvim > /dev/null; then
+	if command -v nvim &> /dev/null; then
 	    echo "Installing nvim..."
 	    curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.appimage
 	    chmod u+x nvim-linux-x86_64.appimage
-	    ./nvim-linux-x86_64.appimage
+	    sudo mv nvim-linux-x86_64.appimage /opt/nvim/nvim
+	    nvim --version
 
 	    # expose globally
 	    sudo mkdir -p /opt/nvim
 	    sudo mv nvim-linux-x86_64.appimage /opt/nvim/nvim
+	    sudo ln -sf /opt/nvim/nvim/ usr/local/bin/nvim
 	    [ type -p nvim > /dev/null ] && echo "Successfully installed nvim!\n" 
 	else
 	    echo "Nvim found, skipping installation."
-
-	# TODO: create script
-	
-	# script will handle checking previous installs
-	# chmod +x ${ZSH_INSTALL_SCRIPT}
-	# source ${ZSH_INSTALL_SCRIPT}
+	fi
 
 	echo "Installing zsh..."
-	sudo apt install zsh
+	sudo ${PKG_MANAGER} install -y zsh
+
+	# install plugins
+	git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${HOME}/.powerlevel10k
 
 	break ;;
     [Nn]*) 
@@ -75,5 +91,8 @@ sh ./setup-symlinks.sh
 # default to zsh
 echo "Changing default shell to $(which zsh)..."
 sudo chsh -s $(which zsh)
+
+echo "Successfully installed zsh and all plugins!"
+echo "Start a new shell or run source ~/.zshrc for changes to take effect."
 
 echo "Installation complete!"

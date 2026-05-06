@@ -1,12 +1,13 @@
 " https://github.com/amix/vimrc/blob/master/vimrcs/basic.vim
 
-set showcmd         " Always show the command as it is being typed.
-set tabstop=4       " Tab length
-set shiftwidth=4    " 4 space >indent
-set ruler           " Always show current position
-set cmdheight=1     " Height of the command bar
-set hid             " A buffer becomes hidden when it is abandoned
-set ignorecase      " ignore case when searching
+set showcmd                " Always show the command as it is being typed.
+set tabstop=4              " Tab length
+set shiftwidth=4           " 4 space >indent
+set ruler                  " Always show current position
+set cmdheight=1            " Height of the command bar
+set hid                    " A buffer becomes hidden when it is abandoned
+set ignorecase             " ignore case when searching
+set clipboard+=unnamedplus " use clipboard for all operations
 
 " Ignore compiled files
 set wildignore=*.o,*~,*.pyc
