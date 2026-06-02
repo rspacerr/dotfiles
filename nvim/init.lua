@@ -19,5 +19,9 @@ require 'lazy-bootstrap'
 -- [[ Configure and install plugins ]]
 require 'lazy-plugins'
 
+require'nvim-treesitter.config'.setup {
+  ensure_installed = { "c", "lua", "vim", "vimdoc", "query" },
+  -- ... any other configuration params here ...
+}
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et

@@ -5,7 +5,7 @@
 
 PACKAGES="git vim-gtk3 xclip wl-clipboard neovim zsh zinit"
 DOT=${HOME}/.dotfiles
-# OS_TYPE="$(uname | tr "[:upper:]" "[:lower:]")"
+OS_TYPE="$(uname | tr "[:upper:]" "[:lower:]")"
 ZSH_INSTALL_SCRIPT=${HOME}/.dotfiles/zsh/zsh_install.sh
 
 SUPPORTED="apt dnf"
@@ -83,6 +83,16 @@ while true; do
     esac
 done
 
+# TODO: move to separate file
+# if on wayland, install waywall for mcsr
+if [[ ${OS_VERSION} == "linux" ]] -a [[ $(echo $XDG_SESSION_TYPE) == "wayland" ]] ; then
+    cd ${HOME}
+    git clone https://github.com/tesselslate/waywall
+    cd waywall
+    make
+    mkdir -p $HOME/mcsr
+    export PATH="$HOME/mcsr/waywall/build/waywall/waywall:$PATH"
+fi
 
 # setup symlinks
 echo "Setting up symlinks..."
@@ -90,7 +100,7 @@ sh ./setup-symlinks.sh
 
 # default to zsh
 echo "Changing default shell to $(which zsh)..."
-sudo chsh -s $(which zsh)
+chsh -s $(which zsh)
 
 echo "Successfully installed zsh and all plugins!"
 echo "Start a new shell or run source ~/.zshrc for changes to take effect."
